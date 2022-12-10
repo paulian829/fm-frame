@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Project NETHRA</title>
+    <title>Facemask Detection System</title>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1" >
 <style>
 body {
@@ -118,28 +118,29 @@ body, html {
   color: #333;
   background: #F7F7F7;
 }
+.bgcenter {
+  height: 100%;
+  display: flex;
+  width: 100%;
+  background-image: url("/static/css/bg4.png");
+  align-items: center;
+  justify-content: center;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.cctv-container{
+  width:50%
+}
 
 </style>
-</head>
-<img>
-
-<div id="mySidebar" class="sidebar">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-  <a href="about">About</a>
 
 
+<div class='bgcenter'>
+  <img src="{{ url_for('video_feed') }}" class='cctv-container'>
 
 </div>
 
-
-<div class="hero-image">
-    <button class="openbtn" onclick="openNav()">☰ </button>
-    <div class="hero-text">
-    <h1 style="font-size:50px">Project Nethra</h1>
-    <p>An Automatic Facial Mask Detection App</p>
-    <button onclick="location.href = 'video_feed';" id="myButton" class="float-left submit-button" >GO TO APP</button>
-  </div>
-</div>
 
 
 <script>
