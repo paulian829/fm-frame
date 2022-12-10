@@ -49,7 +49,7 @@ class VideoCamera(object):
 
             # filter out weak detections by ensuring the confidence is
             # greater than the minimum confidence
-            if confidence > 0.5:
+            if confidence > 0.7:
                 # compute the (x, y)-coordinates of the bounding box for
                 # the object
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
@@ -128,6 +128,7 @@ class VideoCamera(object):
                     if self.soundOn == False:
                         self.soundOn = True
                         playsound('warning sound.mp3')
+                        cv2.imwrite('test.jpg',image)
                     
                     
                 # include the probability in the label
