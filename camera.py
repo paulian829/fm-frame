@@ -5,6 +5,12 @@ from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import load_model
 from playsound import playsound
+import time
+import _thread
+import requests
+import base64
+import json
+import uuid
 
 class VideoCamera(object):
     def __init__(self):
@@ -49,7 +55,7 @@ class VideoCamera(object):
 
             # filter out weak detections by ensuring the confidence is
             # greater than the minimum confidence
-            if confidence > 0.7:
+            if confidence > 0.8: #Adjust this value to adjust confident threshold
                 # compute the (x, y)-coordinates of the bounding box for
                 # the object
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
@@ -106,7 +112,7 @@ class VideoCamera(object):
                 (locs, preds) = VideoCamera.predict(self, image, self.faceNet, self.maskNet)
             # loop over the detected face locations and their corresponding
             # locations
-            print(locs,preds)
+            # print(locs,preds)
             if len(locs) == 0:
                 print('reset')
                 self.soundOn =False
@@ -122,13 +128,11 @@ class VideoCamera(object):
                 print(label)
                 if label == 'Mask':
                     self.soundOn = False
-                    
-                    
                 else:
                     if self.soundOn == False:
                         self.soundOn = True
-                        playsound('warning sound.mp3')
-                        cv2.imwrite('test.jpg',image)
+                        cv2.imwrite('test.jpg', image)
+                        _thread.start_new_thread(threaded_api_call,('Thread-name',2))
                     
                     
                 # include the probability in the label
@@ -141,7 +145,39 @@ class VideoCamera(object):
                 cv2.rectangle(image, (startX, startY), (endX, endY), color, 2)
 
 
+            # Convert to JPG encoding
             ret, jpeg = cv2.imencode('.jpg', image)
+            
             data = []
             data.append(jpeg.tobytes())
             return data
+
+
+def threaded_api_call(thread_name, delay):
+    """
+    https://stackoverflow.com/questions/29104107/upload-image-using-post-form-data-in-python-requests
+    
+    https://www.tutorialspoint.com/python3/python_multithreading.htm
+    
+    https://stackoverflow.com/questions/534839/how-to-create-a-guid-uuid-in-python1
+    
+    """
+    playsound('warning sound.mp3')
+    
+    # Change this depending on API ENDPOINT
+    api = 'https://639ea1d03542a261305ebe98.mockapi.io/Image'
+    image_file = 'test.jpg'
+
+    with open(image_file, "rb") as f:
+        im_bytes = f.read()        
+    im_b64 = base64.b64encode(im_bytes).decode("utf8")
+
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    
+    payload = json.dumps({"file": im_b64, "filename":str(uuid.uuid4()) + '.jpg'})
+    response = requests.post(api, data=payload, headers=headers)
+    try:
+        data = response.json()     
+        print(data)                
+    except requests.exceptions.RequestException:
+        print(response.text)
