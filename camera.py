@@ -165,7 +165,7 @@ def threaded_api_call(thread_name, delay):
     playsound('warning sound.mp3')
     
     # Change this depending on API ENDPOINT
-    api = 'https://639ea1d03542a261305ebe98.mockapi.io/Image'
+    api = 'http://localhost:8000/add_image/'
     image_file = 'test.jpg'
 
     with open(image_file, "rb") as f:
